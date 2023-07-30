@@ -1,6 +1,41 @@
+import React, {useState} from 'react';
 import './App.css';
+import TodoTable from './components/TodoTable';
+import NewTodoForm from './components/NewTodoForm';
 
 function App() {
+
+  const [showAddTodoForm, setShowAddTodoForm] = useState(false);
+
+  const [todos, setTodos] = useState([
+    {rowNumber: 1, rowDescription: 'Feed puppy', rowAssigned: 'User One'},
+    {rowNumber: 2, rowDescription: 'Water plans', rowAssigned: 'User Two'},
+    {rowNumber: 3, rowDescription: 'Make dinner', rowAssigned: 'User One'},
+    {rowNumber: 4, rowDescription: 'Charge phone battery', rowAssigned: 'User One'}
+  ])
+
+  const addTodo = (description, assigned) => {
+    let rowNumber = 0;
+    if (todos.length > 0) {
+      rowNumber = todos[todos.length - 1].rowNumber + 1;
+    } else {
+      rowNumber = 1;
+    }
+    const newTodo = {
+      rowNumber: rowNumber,
+      rowDescription: description,
+      rowAssigned: assigned
+    };
+    setTodos(todos => [...todos, newTodo])
+  }
+
+  const deleteTodo = (deleteTodoRowNumber) => {
+    let filtered = todos.filter(function (value) {
+      return value.rowNumber !== deleteTodoRowNumber;
+    });
+    setTodos(filtered);
+  }
+
   return (
     <div className='mt-5 container'>
       <div className='card'>
@@ -8,27 +43,11 @@ function App() {
           Your Todo's
         </div>
         <div className='card-body'>
-          <table className='table table-hover'>
-              <thead>
-                <tr>
-                  <th scope='col'>#</th>
-                  <th scope='col'>Description</th>
-                  <th scope='col'>Assigned</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope='row'>1</th>
-                  <td>Feed dog</td>
-                  <td>Eric</td>
-                </tr>
-                <tr>
-                  <th scope='row'>2</th>
-                  <td>Get haircut</td>
-                  <td>Eric</td>
-                </tr>
-              </tbody>
-          </table>
+          <TodoTable todos={todos} deleteTodo={deleteTodo} />
+          <button onClick={() => setShowAddTodoForm(!showAddTodoForm)} className='btn btn-primary'>
+            {showAddTodoForm ? 'Close New Todo' : 'New Todo'}
+          </button>
+          {showAddTodoForm && <NewTodoForm addTodo={addTodo} />}
         </div>
       </div>
     </div>
